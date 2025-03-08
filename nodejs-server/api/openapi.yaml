@@ -1,0 +1,193 @@
+openapi: 3.0.0
+info:
+  title: ApiAnimals
+  description: "Esta API es mi primera prueba de API.\n\nPermite realizar la guientes\
+    \ opciones en la BD de animales:\n- Eliminar\n- Crear \n- Modificar"
+  termsOfService: https:myapiexample.com
+  contact:
+    name: Andrés Felipe
+    url: http://www.anfegaba22.com
+    email: anfegaba22@hotmail.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.1.0
+servers:
+- url: https://virtserver.swaggerhub.com/anfegaba-86e/ApiAnimals/1.1.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: petUpdate
+  description: Actualizar un animal en la BD
+- name: petCreate
+  description: Crear un nuevo animal en la BD
+- name: petDelete
+  description: Eliminar un nuevo animal en la BD
+- name: petConsult
+  description: Consulta el listado de animales creados
+paths:
+  /animals:
+    get:
+      tags:
+      - petConsult
+      summary: Retorna la lista de animales
+      description: Entrega una lista de mascotas
+      operationId: animalsGET
+      responses:
+        "200":
+          description: Solicitud exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+        "204":
+          description: No hay contenido
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "{\"message\":\"No hay contenido en la BD\"}"
+                x-content-type: application/json
+        "404":
+          description: Solicitud no encontrada
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "{\"message\":\"Error 404. Page or Request not found\"}"
+                x-content-type: application/json
+      x-swagger-router-controller: PetConsult
+    put:
+      tags:
+      - petUpdate
+      summary: Actualiza un animal en la BD
+      description: Actualiza un animalpor el ID
+      operationId: animalsPUT
+      requestBody:
+        description: actualizar un animal existente
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Animal'
+        required: true
+      responses:
+        "200":
+          description: Operación exitosa
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+        "400":
+          description: ID invalido
+        "404":
+          description: Animal inexistente
+        "422":
+          description: La solicitud no pudo ser procesada
+      x-swagger-router-controller: PetUpdate
+    post:
+      tags:
+      - petCreate
+      summary: Crear un nuevo animal en la BD
+      description: Permite crear animales nuevos en la base de datos
+      operationId: animalsPOST
+      requestBody:
+        description: Datos del nuevo animal
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Animal'
+        required: true
+      responses:
+        "200":
+          description: Solicitud exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+        "400":
+          description: Entrada invalida
+        "422":
+          description: La solicitud no pudo ser procesada
+      x-swagger-router-controller: PetCreate
+  /animals/{id}:
+    get:
+      tags:
+      - petConsult
+      summary: Obtener el nombre y tipo de animal ingresando su ID
+      description: Obtener el nombre y tipo de animal ingresando su ID
+      operationId: animalsIdGET
+      parameters:
+      - name: id
+        in: path
+        description: Codigo del animal
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Successulf request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Animal'
+        "400":
+          description: Invalid ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "404":
+          description: El animal no pudo ser encontrado
+      x-swagger-router-controller: PetConsult
+    delete:
+      tags:
+      - petDelete
+      summary: Eliminar animal
+      description: Elimina un animal de la BD
+      operationId: animalsIdDELETE
+      parameters:
+      - name: id
+        in: path
+        description: codigo del animal
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Eliminación exitosa
+        "400":
+          description: ID invalido
+      x-swagger-router-controller: PetDelete
+components:
+  schemas:
+    Animal:
+      type: object
+      properties:
+        animal:
+          type: string
+          description: Tipo del animal
+          example: Perro
+        id:
+          type: integer
+          description: ID del animal
+          format: int64
+          example: 1
+        nombre:
+          type: string
+          description: nombre del animal
+          example: Lucas
+      example:
+        animal: Perro
+        id: 1
+        nombre: Lucas
+    inline_response_400:
+      type: object
+      properties:
+        message:
+          type: string
+          example: El ID proporcionado no es válido
